@@ -1,77 +1,74 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Utilitários Online</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Favicon -->
-  <link rel="icon" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4cb.png" type="image/png">
-
+  <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAABHklEQVRoge3ZQQrCQBSF4c9eZ2fke+ZoAc16C2hQWjDbfn6ZPflKwDp9gr+NN3Xfw/NEAhEREREREREREf4fRHTy1KBPJXkaoa5Mo0LJuYkxQbp4UihZEIpbNGIXpQ5zqZT9xt1Djbrnue93FzyhT4uDbJe+WbiPsURR9B1zHDfQdcxw30HXMcd9B1zHDfQdcxw30HXMcd9B1zHDfQdcxw30HXMcN8z9xLHZ03DMARERERERERESkdPA8dr6e0QeXrC4c8AAAAASUVORK5CYII=" type="image/png">
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       background-color: #e6f0ff;
       color: #003366;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      margin: 0;
+      align-items: center;
+      height: 100vh;
       padding: 20px;
       text-align: center;
     }
-
-    h1 {
-      margin-bottom: 40px;
-      font-size: 28px;
-    }
-
-    .link-btn {
-      text-decoration: none;
-      color: #fff;
-      background-color: #0052cc;
-      padding: 18px 24px;
-      margin: 12px 0;
-      border-radius: 8px;
-      font-size: 18px;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .container {
       width: 100%;
-      max-width: 320px;
+      max-width: 360px;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 32px;
+    }
+    .link-btn {
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      gap: 14px;
+      gap: 16px;
+      text-decoration: none;
+      background-color: #0052cc;
+      color: #fff;
+      padding: 20px;
+      margin: 14px 0;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
     }
-
     .link-btn:hover {
       background-color: #003d99;
     }
-
-    .link-btn img {
+    .link-btn svg {
       width: 36px;
       height: 36px;
+      fill: white;
+      flex-shrink: 0;
     }
   </style>
 </head>
 <body>
-  <h1>Utilitários Online</h1>
+  <div class="container">
+    <h1>Utilitários Online</h1>
 
-  <a class="link-btn" href="https://index-html-swart-six.vercel.app/" target="_blank">
-    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4f7.png" alt="QR Code">
-    Criar QR Code Pix Grátis!
-  </a>
+    <a class="link-btn" href="https://index-html-swart-six.vercel.app/" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4V4m1 1v2h2V5H5m5-1h4v4h-4V4m1 1v2h2V5h-2M4 10h4v4H4v-4m1 1v2h2v-2H5m10-1h4v4h-4v-4m1 1v2h2v-2h-2M4 16h4v4H4v-4m1 1v2h2v-2H5m10 0h4v4h-4v-4m1 1v2h2v-2h-2Z" /></svg>
+      Criar QR Code Pix Grátis!
+    </a>
 
-  <a class="link-btn" href="https://codigo-barras-vert.vercel.app/" target="_blank">
-    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4c8.png" alt="Código de Barras">
-    Criar Código de Barras Grátis
-  </a>
+    <a class="link-btn" href="https://codigo-barras-vert.vercel.app/" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M2 4h1v16H2V4m2 2h1v12H4V6m2 3h1v6H6V9m2 2h1v2H8v-2m2-1h1v4h-1v-4m2-1h1v6h-1v-6m2 2h1v2h-1v-2m2-3h1v8h-1V7m2-3h1v16h-1V4Z"/></svg>
+      Criar Código de Barras Grátis
+    </a>
 
-  <a class="link-btn" href="https://pix-gold-five.vercel.app/" target="_blank">
-    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2764.png" alt="Doação">
-    Contribua com este projeto!
-  </a>
-</body>
-</html>
+    <a class="link-btn" href="https://pix-gold-five.vercel.app/" target="_blank">
+      <svg viewBox="0 0 24 24"
