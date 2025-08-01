@@ -1,81 +1,70 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Doação via Pix</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; }
+    body { font-family: Arial; max-width: 420px; margin: 30px auto; background: #f5f5f5; padding: 20px; border-radius: 10px; }
     h2 { text-align: center; }
-    label { font-weight: bold; margin-top: 10px; display: block; }
-    input { width: 100%; padding: 8px; margin-top: 5px; }
-    button { width: 100%; padding: 10px; margin-top: 15px; font-weight: bold; cursor: pointer; }
-    #qrcode { text-align: center; margin-top: 20px; }
-    .pix-code { background: #fff; padding: 10px; border: 1px solid #ccc; font-family: monospace; word-wrap: break-word; margin-top: 10px; }
+    label { display: block; font-weight: bold; margin-top: 10px; }
+    input { width: 100%; padding: 10px; margin-top: 5px; font-size: 16px; }
+    button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; cursor: pointer; font-size: 16px; }
+    #qrcode { margin-top: 20px; text-align: center; }
+    #emv { margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #ccc; font-family: monospace; word-break: break-word; }
   </style>
 </head>
 <body>
   <h2>Doação via Pix</h2>
 
-  <label for="valor">Digite o valor (R$):</label>
-  <input type="number" step="0.01" id="valor" placeholder="Ex: 25.00">
+  <label for="valor">Valor da Doação (R$):</label>
+  <input type="number" id="valor" step="0.01" placeholder="Digite o valor">
 
-  <button onclick="gerarPix()">Doar</button>
+  <button onclick="gerarDoacao()">Gerar QR Code Pix</button>
 
   <div id="qrcode"></div>
-  <div id="pixCode" class="pix-code"></div>
-  <button onclick="copiarPix()">Copiar Código Pix</button>
+  <div id="emv"></div>
+  <button onclick="copiarEmv()">Copiar Código Pix</button>
 
   <script>
-    function gerarPix() {
-      const valor = document.getElementById('valor').value;
-      const nome = "Juliano Lima";
-      const chave = "julianomarcelo.lima@gmail.com";
-      const txid = "***";
+    const nome = "Juliano Lima";
+    const chave = "julianomarcelo.lima@gmail.com";
+    const txid = "***";
 
-      const pix = gerarEMVPix(chave, nome, valor, txid);
+    function gerarDoacao() {
+      const valor = parseFloat(document.getElementById("valor").value || "0").toFixed(2);
+      const payload = gerarPayloadPix(chave, nome, valor, txid);
+      document.getElementById("emv").innerText = payload;
 
-      // Gerar o QR Code
-      document.getElementById('qrcode').innerHTML = "";
-      QRCode.toCanvas(pix, { width: 256 }, function (err, canvas) {
-        if (err) {
-          console.error("Erro ao gerar QR Code:", err);
-          return;
-        }
-        document.getElementById('qrcode').appendChild(canvas);
-      });
-
-      document.getElementById('pixCode').innerText = pix;
-    }
-
-    function copiarPix() {
-      const codigo = document.getElementById('pixCode').innerText;
-      navigator.clipboard.writeText(codigo).then(() => {
-        alert("Código Pix copiado com sucesso!");
-      }, () => {
-        alert("Erro ao copiar o código Pix.");
+      QRCode.toCanvas(payload, { width: 256 }, function (err, canvas) {
+        const div = document.getElementById("qrcode");
+        div.innerHTML = "";
+        if (!err) div.appendChild(canvas);
       });
     }
 
-    function gerarEMVPix(chave, nome, valor, txid) {
-      function format(id, value) {
+    function copiarEmv() {
+      const codigo = document.getElementById("emv").innerText;
+      navigator.clipboard.writeText(codigo).then(() => alert("Código Pix copiado com sucesso!"));
+    }
+
+    function gerarPayloadPix(chave, nome, valor, txid) {
+      function f(id, value) {
         const size = String(value.length).padStart(2, '0');
         return id + size + value;
       }
 
-      let emv = "000201";
-      emv += format("26", format("00", "BR.GOV.BCB.PIX") + format("01", chave));
-      emv += format("52", "0000");
-      emv += format("53", "986");
-      if (valor && parseFloat(valor) > 0) {
-        emv += format("54", parseFloat(valor).toFixed(2));
-      }
-      emv += format("58", "BR");
-      emv += format("59", nome);
-      emv += format("62", format("05", txid));
-      emv += "6304";
-      emv += crc16(emv);
-      return emv;
+      let payload = "000201";
+      payload += f("26", f("00", "BR.GOV.BCB.PIX") + f("01", chave));
+      payload += f("52", "0000");
+      payload += f("53", "986");
+      if (parseFloat(valor) > 0) payload += f("54", valor);
+      payload += f("58", "BR");
+      payload += f("59", nome);
+      payload += f("62", f("05", txid));
+      payload += "6304";
+      payload += crc16(payload);
+      return payload;
     }
 
     function crc16(str) {
@@ -83,15 +72,12 @@
       for (let i = 0; i < str.length; i++) {
         crc ^= str.charCodeAt(i) << 8;
         for (let j = 0; j < 8; j++) {
-          if ((crc & 0x8000) !== 0) {
-            crc = (crc << 1) ^ 0x1021;
-          } else {
-            crc <<= 1;
-          }
+          if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
+          else crc <<= 1;
         }
         crc &= 0xFFFF;
       }
-      return crc.toString(16).toUpperCase().padStart(4, '0');
+      return crc.toString(16).toUpperCase().padStart(4, "0");
     }
   </script>
 </body>
