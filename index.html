@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Doar via Pix</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; }
+    h2 { text-align: center; }
+    label { font-weight: bold; margin-top: 10px; display: block; }
+    input { width: 100%; padding: 8px; margin-top: 5px; }
+    button { width: 100%; padding: 10px; margin-top: 15px; font-weight: bold; cursor: pointer; }
+    #qrcode { text-align: center; margin-top: 20px; }
+    .pix-code { background: #fff; padding: 10px; border: 1px solid #ccc; font-family: monospace; word-wrap: break-word; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Doação via Pix</h2>
+
+  <label for="valor">Digite o valor (R$):</label>
+  <input type="number" step="0.01" id="valor" placeholder="Ex: 25.00">
+
+  <button onclick="gerarPix()">Doar</button>
+
+  <div id="qrcode"></div>
+  <div id="pixCode" class="pix-code"></div>
+  <button onclick="copiarPix()">Copiar Código Pix</button>
+
+  <script>
+    function gerarPix() {
+      const valor = document.getElementById('valor').value;
+      const nome = "Juliano Lima";
+      const chave = "julianomarcelo.lima@gmail.com";
+      const txid = "***";
+
+      const pix = gerarEMVPix(chave, nome, valor, txid);
+
+      document.getElementById('qrcode').innerHTML = "";
+      QRCode.toCanvas(document.getElementById('qrcode'), pix, { width: 250 }, function (error) {
+        if (error) console.error(error);
+      });
+
+      document.getElementById('pixCode').innerText = pix;
+    }
+
+    function copiarPix() {
+      const codigo = document.getElementById('pixCode').innerText;
+      navigator.clipboard.writeText(codigo).then(() => {
+        alert("Código Pix copiado com sucesso!");
+      }, () => {
+        alert("Erro ao copiar o código Pix.");
+      });
+    }
+
+    function gerarEMVPix(chave, nome, valor, txid) {
+      function formatField(id, value) {
+        return id + String(value.length).padStart(2, '0') + value;
+      }
+
+      let emv = "000201";
+      emv += "26" + String((formatField("00","BR.GOV.BCB.PIX") + formatField("01", chave)).length).padStart(2,'0') + formatField("00","BR.GOV.BCB.PIX") + formatField("01", chave);
+      emv += formatField("52","0000");
+      emv += formatField("53","986");
+      if (valor && valor > 0) emv += formatField("54", parseFloat(valor).toFixed(2));
+      emv += formatField("58","BR");
+      emv += formatField("59", nome);
+      emv += formatField("62", formatField("05", txid));
+      emv += "6304";
+      emv += crc16(emv);
+      return emv;
+    }
+
+    function crc16(str) {
+      let crc = 0xFFFF;
+      for (let c = 0; c < str.length; c++) {
+        crc ^= str.charCodeAt(c) << 8;
+        for (let i = 0; i < 8; i++) {
+          if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
+          else crc = crc << 1;
+        }
+      }
+      return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+    }
+  </script>
+</body>
+</html>
