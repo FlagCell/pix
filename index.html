@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Doar via Pix</title>
+  <title>Doação via Pix</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; }
@@ -35,9 +35,14 @@
 
       const pix = gerarEMVPix(chave, nome, valor, txid);
 
+      // Gerar o QR Code
       document.getElementById('qrcode').innerHTML = "";
-      QRCode.toCanvas(document.getElementById('qrcode'), pix, { width: 250 }, function (error) {
-        if (error) console.error(error);
+      QRCode.toCanvas(pix, { width: 256 }, function (err, canvas) {
+        if (err) {
+          console.error("Erro ao gerar QR Code:", err);
+          return;
+        }
+        document.getElementById('qrcode').appendChild(canvas);
       });
 
       document.getElementById('pixCode').innerText = pix;
@@ -53,18 +58,21 @@
     }
 
     function gerarEMVPix(chave, nome, valor, txid) {
-      function formatField(id, value) {
-        return id + String(value.length).padStart(2, '0') + value;
+      function format(id, value) {
+        const size = String(value.length).padStart(2, '0');
+        return id + size + value;
       }
 
       let emv = "000201";
-      emv += "26" + String((formatField("00","BR.GOV.BCB.PIX") + formatField("01", chave)).length).padStart(2,'0') + formatField("00","BR.GOV.BCB.PIX") + formatField("01", chave);
-      emv += formatField("52","0000");
-      emv += formatField("53","986");
-      if (valor && valor > 0) emv += formatField("54", parseFloat(valor).toFixed(2));
-      emv += formatField("58","BR");
-      emv += formatField("59", nome);
-      emv += formatField("62", formatField("05", txid));
+      emv += format("26", format("00", "BR.GOV.BCB.PIX") + format("01", chave));
+      emv += format("52", "0000");
+      emv += format("53", "986");
+      if (valor && parseFloat(valor) > 0) {
+        emv += format("54", parseFloat(valor).toFixed(2));
+      }
+      emv += format("58", "BR");
+      emv += format("59", nome);
+      emv += format("62", format("05", txid));
       emv += "6304";
       emv += crc16(emv);
       return emv;
@@ -72,14 +80,18 @@
 
     function crc16(str) {
       let crc = 0xFFFF;
-      for (let c = 0; c < str.length; c++) {
-        crc ^= str.charCodeAt(c) << 8;
-        for (let i = 0; i < 8; i++) {
-          if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
-          else crc = crc << 1;
+      for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          if ((crc & 0x8000) !== 0) {
+            crc = (crc << 1) ^ 0x1021;
+          } else {
+            crc <<= 1;
+          }
         }
+        crc &= 0xFFFF;
       }
-      return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+      return crc.toString(16).toUpperCase().padStart(4, '0');
     }
   </script>
 </body>
