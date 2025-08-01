@@ -2,42 +2,64 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Doação Pix - Juliano</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <title>Utilitários Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Favicon azul simples (pode trocar pela URL de outro ícone se quiser) -->
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/6815/6815043.png" type="image/png">
+
   <style>
-    body { font-family: Arial, sans-serif; max-width: 420px; margin: 30px auto; background: #f5f5f5; padding: 20px; border-radius: 10px; }
-    h2 { text-align: center; margin-bottom: 10px; }
-    p { text-align: center; font-size: 15px; color: #333; margin-top: 0; }
-    #qrcode { text-align: center; margin-top: 20px; }
-    .pix-code { background: #fff; padding: 10px; border: 1px solid #ccc; font-family: monospace; word-break: break-word; margin-top: 20px; }
-    button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; cursor: pointer; font-size: 16px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f0ff;
+      color: #003366;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+
+    .link-btn {
+      text-decoration: none;
+      color: #fff;
+      background-color: #0052cc;
+      padding: 14px 20px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .link-btn:hover {
+      background-color: #003d99;
+    }
   </style>
 </head>
 <body>
-  <h2>Contribua com este projeto</h2>
-  <p>Sua doação ajuda a manter e dar continuidade ao nosso trabalho.  
-  Qualquer valor é bem-vindo. Obrigado pelo apoio!</p>
+  <h1>Utilitários Online</h1>
 
-  <div id="qrcode"></div>
+  <a class="link-btn" href="https://index-html-swart-six.vercel.app/" target="_blank">
+    Criar QR Code Pix Grátis!
+  </a>
 
-  <div class="pix-code" id="emv">
-    00020126510014BR.GOV.BCB.PIX0129julianomarcelo.lima@gmail.com5204000053039865802BR5901N6001C62070503***6304B1AF
-  </div>
+  <a class="link-btn" href="https://codigo-barras-vert.vercel.app/" target="_blank">
+    Criar Código de Barras Grátis
+  </a>
 
-  <button onclick="copiar()">Copiar Código Pix</button>
-
-  <script>
-    const emv = "00020126510014BR.GOV.BCB.PIX0129julianomarcelo.lima@gmail.com5204000053039865802BR5901N6001C62070503***6304B1AF";
-
-    QRCode.toCanvas(emv, { width: 256 }, function (err, canvas) {
-      if (!err) {
-        document.getElementById("qrcode").appendChild(canvas);
-      }
-    });
-
-    function copiar() {
-      navigator.clipboard.writeText(emv).then(() => alert("Código Pix copiado com sucesso!"));
-    }
-  </script>
+  <a class="link-btn" href="https://pix-gold-five.vercel.app/" target="_blank">
+    Contribua com este projeto!
+  </a>
 </body>
 </html>
