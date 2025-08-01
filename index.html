@@ -1,83 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Doação via Pix</title>
+  <meta charset="UTF-8">
+  <title>Doação Pix - Juliano</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial; max-width: 420px; margin: 30px auto; background: #f5f5f5; padding: 20px; border-radius: 10px; }
+    body { font-family: Arial, sans-serif; max-width: 400px; margin: 30px auto; background: #f5f5f5; padding: 20px; border-radius: 10px; }
     h2 { text-align: center; }
-    label { display: block; font-weight: bold; margin-top: 10px; }
-    input { width: 100%; padding: 10px; margin-top: 5px; font-size: 16px; }
+    #qrcode { text-align: center; margin-top: 20px; }
+    .pix-code { background: #fff; padding: 10px; border: 1px solid #ccc; font-family: monospace; word-break: break-word; margin-top: 20px; }
     button { width: 100%; padding: 12px; margin-top: 15px; font-weight: bold; cursor: pointer; font-size: 16px; }
-    #qrcode { margin-top: 20px; text-align: center; }
-    #emv { margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #ccc; font-family: monospace; word-break: break-word; }
   </style>
 </head>
 <body>
   <h2>Doação via Pix</h2>
 
-  <label for="valor">Valor da Doação (R$):</label>
-  <input type="number" id="valor" step="0.01" placeholder="Digite o valor">
-
-  <button onclick="gerarDoacao()">Gerar QR Code Pix</button>
-
   <div id="qrcode"></div>
-  <div id="emv"></div>
-  <button onclick="copiarEmv()">Copiar Código Pix</button>
+
+  <div class="pix-code" id="emv">
+    00020126510014BR.GOV.BCB.PIX0129julianomarcelo.lima@gmail.com5204000053039865802BR5901N6001C62070503***6304B1AF
+  </div>
+
+  <button onclick="copiar()">Copiar Código Pix</button>
 
   <script>
-    const nome = "Juliano Lima";
-    const chave = "julianomarcelo.lima@gmail.com";
-    const txid = "***";
+    const emv = "00020126510014BR.GOV.BCB.PIX0129julianomarcelo.lima@gmail.com5204000053039865802BR5901N6001C62070503***6304B1AF";
 
-    function gerarDoacao() {
-      const valor = parseFloat(document.getElementById("valor").value || "0").toFixed(2);
-      const payload = gerarPayloadPix(chave, nome, valor, txid);
-      document.getElementById("emv").innerText = payload;
-
-      QRCode.toCanvas(payload, { width: 256 }, function (err, canvas) {
-        const div = document.getElementById("qrcode");
-        div.innerHTML = "";
-        if (!err) div.appendChild(canvas);
-      });
-    }
-
-    function copiarEmv() {
-      const codigo = document.getElementById("emv").innerText;
-      navigator.clipboard.writeText(codigo).then(() => alert("Código Pix copiado com sucesso!"));
-    }
-
-    function gerarPayloadPix(chave, nome, valor, txid) {
-      function f(id, value) {
-        const size = String(value.length).padStart(2, '0');
-        return id + size + value;
+    // Gera o QR Code no canvas
+    QRCode.toCanvas(emv, { width: 256 }, function (err, canvas) {
+      if (!err) {
+        document.getElementById("qrcode").appendChild(canvas);
       }
+    });
 
-      let payload = "000201";
-      payload += f("26", f("00", "BR.GOV.BCB.PIX") + f("01", chave));
-      payload += f("52", "0000");
-      payload += f("53", "986");
-      if (parseFloat(valor) > 0) payload += f("54", valor);
-      payload += f("58", "BR");
-      payload += f("59", nome);
-      payload += f("62", f("05", txid));
-      payload += "6304";
-      payload += crc16(payload);
-      return payload;
-    }
-
-    function crc16(str) {
-      let crc = 0xFFFF;
-      for (let i = 0; i < str.length; i++) {
-        crc ^= str.charCodeAt(i) << 8;
-        for (let j = 0; j < 8; j++) {
-          if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
-          else crc <<= 1;
-        }
-        crc &= 0xFFFF;
-      }
-      return crc.toString(16).toUpperCase().padStart(4, "0");
+    // Copia para área de transferência
+    function copiar() {
+      navigator.clipboard.writeText(emv).then(() => alert("Código Pix copiado com sucesso!"));
     }
   </script>
 </body>
